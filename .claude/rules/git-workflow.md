@@ -7,11 +7,13 @@ Conventions for branches, commits, and PRs. Referenced by `/squad` and the disci
 - **English for everything that lands on GitHub**: commit messages, branch names, PR titles/bodies, issue titles/bodies, and code comments in PRs/issues (including follow-ups).
 - **PT-BR for internal coordination**: chat with the user and messages between teammates.
 
-## Branches
+## Branches (Git Flow)
 
-- Branch off `main`.
+- **`main`** — stable / released version only. Protected: no direct pushes. Updated only by promoting `develop` (a release).
+- **`develop`** — integration branch; all feature/fix work targets it.
+- Branch off **`develop`**.
 - Name: `<type>/<slug>` where `<type>` ∈ `feat | fix | refactor | chore | docs | test | perf | ci` and `<slug>` is short kebab-case.
-- Prefer `gh issue develop <n> --base main --branch <type>/<slug> --checkout` so the branch is linked to its issue.
+- Prefer `gh issue develop <n> --base develop --branch <type>/<slug> --checkout` so the branch is linked to its issue.
 
 ## Commits
 
@@ -22,9 +24,16 @@ Conventions for branches, commits, and PRs. Referenced by `/squad` and the disci
 
 ## Pull requests
 
-- Open against `main`. Title in Conventional-Commit form, referencing the issue: `<type>: <desc> (#<n>)`.
+- Open feature/fix PRs against **`develop`**. Title in Conventional-Commit form, referencing the issue: `<type>: <desc> (#<n>)`.
 - Body includes `Closes #<n>` for auto-close, a summary, and a "Follow-ups / Out of scope" section if applicable.
+- Every PR (to `develop` or `main`) gets an automated Claude review.
 - **Gates are human**: do not merge. The user approves and merges in the GitHub UI.
+
+## Releases (develop → main)
+
+- A release is a PR from `develop` into `main`, merged with **"Create a merge commit"** (never squash/rebase — preserves shared ancestry).
+- Tag `main` with a lightweight `vX.Y.Z` and cut a GitHub Release.
+- `main` always stays deployable.
 
 ## SDD obligations (per PR)
 
