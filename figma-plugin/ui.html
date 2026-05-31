@@ -1,0 +1,1100 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: var(--figma-color-bg, #ffffff);
+        --surface: var(--figma-color-bg-secondary, #f5f5f5);
+        --surface-strong: var(--figma-color-bg-tertiary, #eeeeee);
+        --text: var(--figma-color-text, #111111);
+        --muted: var(--figma-color-text-secondary, #737373);
+        --border: var(--figma-color-border, #dedede);
+        --brand: var(--figma-color-bg-brand, #111111);
+        --on-brand: var(--figma-color-text-onbrand, #ffffff);
+        --danger: var(--figma-color-text-danger, #d92d20);
+        --success: var(--figma-color-text-success, #079455);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 12px;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .app {
+        display: grid;
+        min-height: 100vh;
+        grid-template-rows: auto auto 1fr auto;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--border);
+        padding: 14px 14px 12px;
+      }
+
+      .mark {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        place-items: center;
+        border-radius: 999px;
+        background: var(--text);
+        color: var(--bg);
+      }
+
+      .title {
+        min-width: 0;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .subtitle {
+        margin-top: 2px;
+        overflow: hidden;
+        color: var(--muted);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        border-bottom: 1px solid var(--border);
+        padding: 8px;
+      }
+
+      .tab {
+        height: 30px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .tab[data-active="true"] {
+        background: var(--surface-strong);
+        color: var(--text);
+      }
+
+      .panel {
+        display: none;
+        min-height: 0;
+        overflow: auto;
+        padding: 14px;
+      }
+
+      .panel[data-active="true"] {
+        display: grid;
+        align-content: start;
+        gap: 12px;
+      }
+
+      .section {
+        display: grid;
+        gap: 8px;
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      h2 {
+        font-size: 12px;
+        line-height: 1.2;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .field {
+        display: grid;
+        gap: 5px;
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        color: var(--text);
+        outline: none;
+      }
+
+      input {
+        height: 36px;
+        padding: 0 11px;
+      }
+
+      textarea {
+        min-height: 150px;
+        resize: vertical;
+        padding: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: var(--text);
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .actions > * {
+        flex: 1;
+      }
+
+      .button {
+        display: inline-flex;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        background: var(--brand);
+        color: var(--on-brand);
+        cursor: pointer;
+        font-weight: 700;
+        padding: 0 12px;
+      }
+
+      .button.secondary {
+        border-color: var(--border);
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .button.ghost {
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .button:disabled {
+        cursor: default;
+        opacity: 0.45;
+      }
+
+      .badge {
+        display: inline-flex;
+        min-height: 22px;
+        align-items: center;
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+      }
+
+      .badge.success {
+        color: var(--success);
+      }
+
+      .badge.danger {
+        color: var(--danger);
+      }
+
+      .badge.active {
+        position: relative;
+        background: rgba(24, 160, 251, 0.12);
+        color: var(--accent, #18a0fb);
+      }
+
+      .badge.active::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        margin-right: 6px;
+        border-radius: 999px;
+        background: currentColor;
+        animation: rozetta-pulse 1.1s ease-in-out infinite;
+      }
+
+      @keyframes rozetta-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.35;
+          transform: scale(0.7);
+        }
+      }
+
+      .status[data-busy="true"] {
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(24, 160, 251, 0.08) 50%,
+          transparent 100%
+        );
+        background-size: 200% 100%;
+        animation: rozetta-shimmer 1.4s linear infinite;
+      }
+
+      @keyframes rozetta-shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      .row-list {
+        display: grid;
+        gap: 6px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        padding: 9px 10px;
+      }
+
+      .row-title {
+        overflow: hidden;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .row-meta {
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .empty {
+        display: grid;
+        place-items: center;
+        gap: 7px;
+        min-height: 116px;
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+        color: var(--muted);
+        text-align: center;
+        padding: 16px;
+      }
+
+      .status {
+        min-height: 42px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 14px;
+      }
+
+      .status strong {
+        color: var(--text);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 3l1.7 5.4L19 10l-5.3 1.6L12 17l-1.7-5.4L5 10l5.3-1.6L12 3z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <div class="title">
+          <h1>Rozetta Bridge</h1>
+          <p class="subtitle" id="connection-label">Not paired yet</p>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Bridge sections">
+        <button class="tab" data-tab="pair" data-active="true">Pair</button>
+        <button class="tab" data-tab="import">Import</button>
+        <button class="tab" data-tab="writeback">Writeback</button>
+      </nav>
+
+      <section class="panel" id="panel-pair" data-active="true">
+        <div class="section">
+          <div class="section-heading">
+            <h2>Workspace pairing</h2>
+            <span class="badge" id="pairing-badge">Local</span>
+          </div>
+          <p class="hint">
+            Pair this Figma file with a Rozetta workspace. The code is local metadata for now;
+            server validation will become mandatory in the next bridge step.
+          </p>
+          <div class="field">
+            <label for="server-url">Rozetta URL</label>
+            <input id="server-url" value="http://localhost:3001" />
+          </div>
+          <div class="field">
+            <label for="pairing-code">Workspace code</label>
+            <input id="pairing-code" placeholder="Paste pairing code" />
+          </div>
+          <button class="button" id="save-pairing">Save pairing</button>
+          <div class="field" style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+            <input id="live-sync-toggle" type="checkbox" style="width: auto;" />
+            <label for="live-sync-toggle" style="margin: 0; cursor: pointer;">
+              Live sync — auto-push Figma changes and auto-poll Rozetta
+            </label>
+          </div>
+          <p class="hint" id="live-sync-hint">
+            Pair the workspace first to enable live sync.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-import">
+        <div class="section">
+          <div class="section-heading">
+            <h2>Figma to Rozetta</h2>
+            <span class="badge" id="snapshot-count">No snapshot</span>
+          </div>
+          <p class="hint">
+            Read local Variables, then send a snapshot to Rozetta for review in Sync Hub.
+          </p>
+          <div class="actions">
+            <button class="button" id="read-variables">Read Variables</button>
+            <button class="button secondary" id="send-snapshot" disabled>Send snapshot</button>
+          </div>
+          <div class="row-list" id="snapshot-summary">
+            <div class="empty">
+              <strong>No snapshot yet</strong>
+              <span>Read Variables from this Figma file to begin.</span>
+            </div>
+          </div>
+          <textarea
+            id="snapshot-json"
+            class="hidden"
+            spellcheck="false"
+            aria-label="Snapshot JSON"
+          ></textarea>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-writeback">
+        <div class="section" id="pending-section" style="display: none;">
+          <div class="section-heading">
+            <h2>Pending from Rozetta</h2>
+            <span class="badge success" id="pending-count">0 ops</span>
+          </div>
+          <p class="hint">
+            Rozetta has new variable changes waiting. Review the summary, then apply.
+          </p>
+          <div class="row-list" id="pending-summary"></div>
+          <div class="actions">
+            <button class="button" id="apply-pending">Apply now</button>
+            <button class="button secondary" id="dismiss-pending">Dismiss</button>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-heading">
+            <h2>Rozetta to Figma</h2>
+            <span class="badge" id="writeback-count">Paste payload</span>
+          </div>
+          <p class="hint">
+            Paste a reviewed <strong>rozetta-figma-writeback/v1</strong> payload. Deletes are
+            blocked in v1.
+          </p>
+          <textarea
+            id="writeback-json"
+            spellcheck="false"
+            placeholder='{"version":"rozetta-figma-writeback/v1", ...}'
+          ></textarea>
+          <div class="actions">
+            <button class="button secondary" id="preview-writeback">Preview payload</button>
+            <button class="button" id="apply-writeback" disabled>Apply to Figma</button>
+          </div>
+          <div class="row-list" id="writeback-summary">
+            <div class="empty">
+              <strong>No payload loaded</strong>
+              <span>Preview a payload before applying anything to Figma.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="status">
+        <span id="status-text">Ready.</span>
+        <span class="badge" id="status-badge">Idle</span>
+      </footer>
+    </main>
+
+    <script>
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = {
+        pair: document.getElementById("panel-pair"),
+        import: document.getElementById("panel-import"),
+        writeback: document.getElementById("panel-writeback"),
+      };
+      const serverUrl = document.getElementById("server-url");
+      const pairingCode = document.getElementById("pairing-code");
+      const savePairing = document.getElementById("save-pairing");
+      const connectionLabel = document.getElementById("connection-label");
+      const pairingBadge = document.getElementById("pairing-badge");
+      const readVariables = document.getElementById("read-variables");
+      const sendSnapshot = document.getElementById("send-snapshot");
+      const snapshotCount = document.getElementById("snapshot-count");
+      const snapshotSummary = document.getElementById("snapshot-summary");
+      const snapshotJson = document.getElementById("snapshot-json");
+      const writebackJson = document.getElementById("writeback-json");
+      const previewWriteback = document.getElementById("preview-writeback");
+      const applyWriteback = document.getElementById("apply-writeback");
+      const writebackCount = document.getElementById("writeback-count");
+      const writebackSummary = document.getElementById("writeback-summary");
+      const statusText = document.getElementById("status-text");
+      const statusBadge = document.getElementById("status-badge");
+      const liveSyncToggle = document.getElementById("live-sync-toggle");
+      const liveSyncHint = document.getElementById("live-sync-hint");
+      const pendingSection = document.getElementById("pending-section");
+      const pendingCount = document.getElementById("pending-count");
+      const pendingSummary = document.getElementById("pending-summary");
+      const applyPending = document.getElementById("apply-pending");
+      const dismissPending = document.getElementById("dismiss-pending");
+
+      let snapshot = null;
+      let writebackPayload = null;
+      let pendingPayload = null;
+      let pendingSyncRunId = null;
+      let pendingSeq = 0;
+      let ackedSeq = 0;
+      let pollTimer = null;
+      let liveSyncActive = false;
+      let autoSnapshotInFlight = false;
+      const POLL_INTERVAL_MS = 3000;
+
+      logBridge("ui loaded", {
+        defaultUrl: "http://localhost:3001",
+      });
+      loadPairing();
+
+      tabs.forEach((tab) => {
+        tab.onclick = () => setTab(tab.dataset.tab);
+      });
+
+      savePairing.onclick = () => {
+        const config = {
+          serverUrl: normalizeUrl(serverUrl.value),
+          pairingCode: pairingCode.value.trim(),
+          liveSync: liveSyncToggle.checked,
+        };
+        logBridge("save pairing clicked", summarizePairing(config));
+        parent.postMessage(
+          { pluginMessage: { type: "rozetta-save-pairing", config } },
+          "*"
+        );
+        setStatus("Saving pairing...", "Saving");
+      };
+
+      liveSyncToggle.onchange = () => {
+        const config = {
+          serverUrl: normalizeUrl(serverUrl.value),
+          pairingCode: pairingCode.value.trim(),
+          liveSync: liveSyncToggle.checked,
+        };
+        // applyLiveSyncMode emits `rozetta-live-sync-set`; we only persist here.
+        parent.postMessage(
+          { pluginMessage: { type: "rozetta-save-pairing", config } },
+          "*"
+        );
+        applyLiveSyncMode(config);
+      };
+
+      applyPending.onclick = () => {
+        if (!pendingPayload) return;
+        setStatus("Applying live writeback…", "Applying");
+        parent.postMessage(
+          { pluginMessage: { type: "rozetta-apply-writeback", payload: pendingPayload } },
+          "*"
+        );
+      };
+
+      dismissPending.onclick = async () => {
+        if (!pendingPayload || !pendingSyncRunId) return;
+        setStatus("Dismissing pending writeback…", "Dismissing");
+        const bindings = Array.isArray(pendingPayload.bindings) ? pendingPayload.bindings : [];
+        const operations = bindings.map((binding, index) => ({
+          id: `${pendingSyncRunId}:dismiss:${index}`,
+          kind: "figma.variable.upsert",
+          status: "blocked",
+          targetKind: "figma-variable",
+          targetId: binding.variableId || `binding:${index}`,
+          summary: "Dismissed by user",
+          payload: { reason: "dismissed" },
+        }));
+        const ok = await reportWritebackResult({
+          syncRunId: pendingSyncRunId,
+          ackSeq: pendingSeq,
+          status: "failed",
+          summary: "Dismissed by user",
+          operations,
+        });
+        if (ok) {
+          ackedSeq = pendingSeq;
+          clearPending();
+          setStatus("Dismissed.", "Idle");
+        }
+      };
+
+      readVariables.onclick = () => {
+        logBridge("read variables clicked");
+        setStatus("Reading Figma Variables...", "Reading");
+        parent.postMessage({ pluginMessage: { type: "rozetta-export-snapshot" } }, "*");
+      };
+
+      sendSnapshot.onclick = async () => {
+        if (!snapshot) return;
+        if (!pairingCode.value.trim()) {
+          setTab("pair");
+          setStatus("Paste the workspace pairing code from Rozetta first.", "Pair", "danger");
+          pairingCode.focus();
+          return;
+        }
+        let timeout;
+        try {
+          setStatus("Sending snapshot to Rozetta...", "Sending");
+          timeout =
+            typeof AbortController !== "undefined" ? createRequestTimeout(120000) : undefined;
+          const endpoint = `${normalizeUrl(serverUrl.value)}/api/figma/snapshot`;
+          logBridge("snapshot send started", {
+            endpoint,
+            hasPairingCode: Boolean(pairingCode.value.trim()),
+            pairingCodeLength: pairingCode.value.trim().length,
+            collections: snapshot.collections.length,
+            variables: snapshot.variables.length,
+          });
+          const response = await fetch(endpoint, {
+            method: "POST",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Rozetta-Workspace-Code": pairingCode.value.trim(),
+            },
+            body: JSON.stringify(snapshot),
+            signal: timeout ? timeout.signal : undefined,
+          });
+          logBridge("snapshot response received", {
+            ok: response.ok,
+            status: response.status,
+            statusText: response.statusText,
+            contentType: response.headers.get("content-type") || "unknown",
+          });
+          const responseText = await response.text();
+          logBridge("snapshot response body read", {
+            characters: responseText.length,
+            preview: responseText.slice(0, 300),
+          });
+          let result;
+          try {
+            result = responseText ? JSON.parse(responseText) : {};
+          } catch (parseError) {
+            console.error("[Rozetta Bridge]", "snapshot response json parse failed", parseError);
+            throw new Error(`Rozetta returned a non-JSON response (${response.status}).`);
+          }
+          if (!result.ok) {
+            const error = new Error(result.error || "Rozetta rejected the snapshot.");
+            error.status = response.status;
+            throw error;
+          }
+          logBridge("snapshot send finished", {
+            ok: result.ok,
+            syncRunId: result.syncRunId || "not returned",
+          });
+          setStatus("Snapshot sent. Review it in Rozetta Sync Hub.", "Sent", "success");
+          notify("Snapshot sent to Rozetta");
+        } catch (error) {
+          console.error("[Rozetta Bridge]", "snapshot send failed", error);
+          if (isPairingError(error)) {
+            markPairingExpired(formatRequestError(error));
+          } else {
+            setStatus(formatRequestError(error), "Error", "danger");
+          }
+        } finally {
+          if (timeout) timeout.clear();
+        }
+      };
+
+      previewWriteback.onclick = () => {
+        try {
+          writebackPayload = JSON.parse(writebackJson.value);
+          if (writebackPayload.version !== "rozetta-figma-writeback/v1") {
+            throw new Error("Expected rozetta-figma-writeback/v1.");
+          }
+          const bindings = Array.isArray(writebackPayload.bindings)
+            ? writebackPayload.bindings.length
+            : 0;
+          const sets = Array.isArray(writebackPayload.sets) ? writebackPayload.sets.length : 0;
+          const themes = Array.isArray(writebackPayload.themes)
+            ? writebackPayload.themes.length
+            : 0;
+          logBridge("writeback previewed", { sets, themes, bindings });
+          writebackCount.textContent = `${bindings} ops`;
+          applyWriteback.disabled = bindings === 0;
+          writebackSummary.innerHTML = [
+            row("Token sets", `${sets} set${sets === 1 ? "" : "s"}`),
+            row("Themes", `${themes} theme${themes === 1 ? "" : "s"}`),
+            row("Variable bindings", `${bindings} reviewed operation${bindings === 1 ? "" : "s"}`),
+          ].join("");
+          setStatus("Payload ready for review.", "Previewed");
+        } catch (error) {
+          console.error("[Rozetta Bridge]", "writeback preview failed", error);
+          writebackPayload = null;
+          applyWriteback.disabled = true;
+          setStatus(error instanceof Error ? error.message : "Invalid writeback payload.", "Error", "danger");
+        }
+      };
+
+      applyWriteback.onclick = () => {
+        if (!writebackPayload) return;
+        const confirmed = confirm(
+          "Apply this reviewed payload to Figma Variables? Destructive deletes are blocked."
+        );
+        if (!confirmed) return;
+        logBridge("writeback apply confirmed", summarizeWriteback(writebackPayload));
+        setStatus("Applying writeback in Figma...", "Applying");
+        parent.postMessage(
+          { pluginMessage: { type: "rozetta-apply-writeback", payload: writebackPayload } },
+          "*"
+        );
+      };
+
+      window.onmessage = (event) => {
+        const data = event.data || {};
+        const message = data.pluginMessage;
+        if (message) {
+          logBridge("message received", { type: message.type });
+        }
+        if (message && message.type === "rozetta-pairing-loaded") {
+          logBridge("pairing loaded", summarizePairing(message.config || {}));
+          applyPairing({
+            serverUrl: message.config.serverUrl || "http://localhost:3001",
+            pairingCode: message.config.pairingCode || "",
+            liveSync: message.config.liveSync !== false,
+          });
+          setStatus("Ready.", "Idle");
+        }
+
+        if (message && message.type === "rozetta-pairing-saved") {
+          logBridge("pairing saved", summarizePairing(message.config || {}));
+          applyPairing({
+            serverUrl: message.config.serverUrl || "http://localhost:3001",
+            pairingCode: message.config.pairingCode || "",
+            liveSync: message.config.liveSync !== false,
+          });
+          setStatus("Pairing saved in Figma.", "Ready");
+        }
+
+        if (message && message.type === "rozetta-document-changed") {
+          if (!liveSyncActive || autoSnapshotInFlight) return;
+          autoSnapshotInFlight = true;
+          logBridge("documentchange relayed, requesting fresh snapshot");
+          parent.postMessage({ pluginMessage: { type: "rozetta-export-snapshot" } }, "*");
+        }
+
+        if (message && message.type === "rozetta-snapshot") {
+          snapshot = message.snapshot;
+          logBridge("snapshot received from runtime", summarizeSnapshot(snapshot));
+          snapshotJson.value = JSON.stringify(snapshot, null, 2);
+          sendSnapshot.disabled = false;
+          snapshotCount.textContent = `${snapshot.variables.length} variables`;
+          snapshotSummary.innerHTML = [
+            row("File", snapshot.name),
+            row("Collections", String(snapshot.collections.length)),
+            row("Variables", String(snapshot.variables.length)),
+          ].join("");
+          if (autoSnapshotInFlight) {
+            // Auto-push triggered by documentchange — skip the user-driven
+            // status messaging and call the existing send routine directly.
+            autoSnapshotInFlight = false;
+            sendSnapshot.click();
+          } else {
+            setStatus("Snapshot ready to send.", "Ready", "success");
+          }
+        }
+
+        if (message && message.type === "rozetta-writeback-result") {
+          const result = message.result;
+          logBridge("writeback result received", result);
+          writebackSummary.innerHTML = [
+            row("Created", String(result.created), "success"),
+            row("Updated", String(result.updated), "success"),
+            row("Skipped", String(result.skipped)),
+            row("Failed", String(result.failed), result.failed > 0 ? "danger" : undefined),
+            ...result.operations.slice(0, 6).map((item) =>
+              row(item.tokenPath || item.variableId || "Operation", `${item.status}: ${item.detail}`)
+            ),
+          ].join("");
+          setStatus("Writeback finished.", "Done", result.failed > 0 ? "danger" : "success");
+          // If this was a live-sync apply, report the per-operation outcomes
+          // back to Rozetta so the SyncRun closes out.
+          if (pendingPayload && pendingSyncRunId) {
+            const operations = (result.operations || []).map((op, index) => ({
+              id: `${pendingSyncRunId}:op:${index}`,
+              kind: "figma.variable.upsert",
+              status: mapPluginOpStatus(op.status),
+              targetKind: "figma-variable",
+              targetId: op.variableId || op.tokenPath || `op:${index}`,
+              summary: `${op.status}: ${op.detail || op.tokenPath || ""}`.slice(0, 200),
+              payload: { setId: op.setId, tokenPath: op.tokenPath },
+            }));
+            reportWritebackResult({
+              syncRunId: pendingSyncRunId,
+              ackSeq: pendingSeq,
+              status: result.failed > 0 ? "failed" : "applied",
+              summary: `Live writeback: ${result.created + result.updated} applied, ${result.skipped} skipped, ${result.failed} failed.`,
+              operations,
+            }).then((ok) => {
+              if (ok) {
+                ackedSeq = pendingSeq;
+                clearPending();
+              }
+            });
+          }
+        }
+
+        if (message && message.type === "rozetta-live-sync-state") {
+          logBridge("live sync state echo", { enabled: message.enabled });
+        }
+
+        if (message && message.type === "rozetta-error") {
+          console.error("[Rozetta Bridge]", "runtime reported error", message.error);
+          setStatus(message.error, "Error", "danger");
+        }
+      };
+
+      function setTab(next) {
+        tabs.forEach((tab) => {
+          tab.dataset.active = String(tab.dataset.tab === next);
+        });
+        Object.entries(panels).forEach(([key, panel]) => {
+          panel.dataset.active = String(key === next);
+        });
+      }
+
+      function loadPairing() {
+        logBridge("load pairing requested");
+        applyPairing({ serverUrl: "http://localhost:3001", pairingCode: "" });
+        parent.postMessage({ pluginMessage: { type: "rozetta-load-pairing" } }, "*");
+      }
+
+      function applyPairing(config) {
+        logBridge("apply pairing to ui", summarizePairing(config));
+        serverUrl.value = normalizeUrl(config.serverUrl || "http://localhost:3001");
+        pairingCode.value = config.pairingCode || "";
+        const paired = Boolean(pairingCode.value.trim());
+        connectionLabel.textContent = paired
+          ? `${serverUrl.value} · paired`
+          : `${serverUrl.value} · local`;
+        pairingBadge.textContent = paired ? "Paired" : "Local";
+        pairingBadge.className = paired ? "badge success" : "badge";
+        liveSyncToggle.checked = paired && config.liveSync !== false;
+        applyLiveSyncMode(config);
+      }
+
+      function applyLiveSyncMode(config) {
+        const paired = Boolean((config.pairingCode || "").trim());
+        const enabled = paired && Boolean(liveSyncToggle.checked);
+        liveSyncToggle.disabled = !paired;
+        liveSyncHint.textContent = !paired
+          ? "Pair the workspace first to enable live sync."
+          : enabled
+            ? "Live sync ON — pushes on Figma edits, polls Rozetta every 3s."
+            : "Live sync paused — use manual Send snapshot / Apply payload below.";
+        liveSyncActive = enabled;
+        parent.postMessage(
+          { pluginMessage: { type: "rozetta-live-sync-set", enabled } },
+          "*"
+        );
+        if (enabled) startPolling();
+        else stopPolling();
+      }
+
+      function startPolling() {
+        if (pollTimer) return;
+        pollTimer = setInterval(pollPending, POLL_INTERVAL_MS);
+        // Run one tick immediately so the user doesn't wait 3s on first enable.
+        pollPending();
+        logBridge("polling started");
+      }
+
+      function stopPolling() {
+        if (!pollTimer) return;
+        clearInterval(pollTimer);
+        pollTimer = null;
+        logBridge("polling stopped");
+      }
+
+      async function pollPending() {
+        if (!pairingCode.value.trim()) return;
+        try {
+          const endpoint = `${normalizeUrl(serverUrl.value)}/api/figma/writeback/pending?seq=${ackedSeq}`;
+          const response = await fetch(endpoint, {
+            method: "GET",
+            mode: "cors",
+            headers: {
+              "X-Rozetta-Workspace-Code": pairingCode.value.trim(),
+            },
+          });
+          if (response.status === 401) {
+            markPairingExpired("Workspace code expired during live sync.");
+            liveSyncToggle.checked = false;
+            applyLiveSyncMode({ pairingCode: pairingCode.value.trim(), liveSync: false });
+            return;
+          }
+          if (!response.ok) return;
+          const data = await response.json();
+          if (!data || data.ok !== true) return;
+          if (data.hasPending) {
+            setTab("writeback");
+            renderPending(data);
+          } else if (pendingPayload && data.currentSeq <= ackedSeq) {
+            clearPending();
+          }
+        } catch (error) {
+          logBridge("poll error", { message: error && error.message });
+        }
+      }
+
+      function renderPending(data) {
+        pendingPayload = data.payload;
+        pendingSyncRunId = data.syncRunId;
+        pendingSeq = data.currentSeq;
+        const bindings = Array.isArray(pendingPayload.bindings) ? pendingPayload.bindings.length : 0;
+        const sets = Array.isArray(pendingPayload.sets) ? pendingPayload.sets.length : 0;
+        const themes = Array.isArray(pendingPayload.themes) ? pendingPayload.themes.length : 0;
+        pendingCount.textContent = `${bindings} ops`;
+        pendingSection.style.display = "";
+        pendingSummary.innerHTML = [
+          row("Sequence", `#${data.currentSeq}`),
+          row("Token sets", `${sets} set${sets === 1 ? "" : "s"}`),
+          row("Themes", `${themes} theme${themes === 1 ? "" : "s"}`),
+          row("Variable bindings", `${bindings} reviewed operation${bindings === 1 ? "" : "s"}`),
+        ].join("");
+        setStatus("Rozetta has new variables ready to apply.", "Receiving", "success");
+      }
+
+      function clearPending() {
+        pendingPayload = null;
+        pendingSyncRunId = null;
+        pendingSeq = 0;
+        pendingSection.style.display = "none";
+        pendingSummary.innerHTML = "";
+      }
+
+      async function reportWritebackResult(input) {
+        try {
+          const endpoint = `${normalizeUrl(serverUrl.value)}/api/figma/writeback/result`;
+          const response = await fetch(endpoint, {
+            method: "POST",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Rozetta-Workspace-Code": pairingCode.value.trim(),
+            },
+            body: JSON.stringify(input),
+          });
+          if (!response.ok) {
+            const text = await response.text();
+            logBridge("writeback result rejected", { status: response.status, body: text.slice(0, 200) });
+            return false;
+          }
+          return true;
+        } catch (error) {
+          logBridge("writeback result error", { message: error && error.message });
+          return false;
+        }
+      }
+
+      function mapPluginOpStatus(status) {
+        if (status === "created" || status === "updated") return "applied";
+        if (status === "failed") return "blocked";
+        return "reviewed";
+      }
+
+      const BUSY_BADGES = new Set([
+        "Sending",
+        "Receiving",
+        "Applying",
+        "Reading",
+        "Saving",
+        "Dismissing",
+      ]);
+      const statusFooter = document.querySelector("footer.status");
+
+      function setStatus(message, badge, tone) {
+        statusText.textContent = message;
+        statusBadge.textContent = badge;
+        const busy = BUSY_BADGES.has(badge);
+        const classes = ["badge"];
+        if (tone) classes.push(tone);
+        if (busy) classes.push("active");
+        statusBadge.className = classes.join(" ");
+        if (statusFooter) statusFooter.dataset.busy = busy ? "true" : "false";
+      }
+
+      function markPairingExpired(message) {
+        setTab("pair");
+        pairingBadge.textContent = "Expired";
+        pairingBadge.className = "badge danger";
+        setStatus(
+          `${message} Copy a fresh workspace code from /sync/figma, paste it, and save pairing again.`,
+          "Expired",
+          "danger"
+        );
+        pairingCode.focus();
+      }
+
+      function notify(message) {
+        logBridge("notify", { message });
+        parent.postMessage({ pluginMessage: { type: "rozetta-notify", message } }, "*");
+      }
+
+      function normalizeUrl(value) {
+        return String(value || "http://localhost:3001").replace(/\/+$/, "");
+      }
+
+      function createRequestTimeout(ms) {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), ms);
+        return {
+          signal: controller.signal,
+          clear: () => clearTimeout(id),
+        };
+      }
+
+      function formatRequestError(error) {
+        if (error && error.name === "AbortError") {
+          return "Snapshot request timed out after 120s.";
+        }
+        return error instanceof Error ? error.message : "Unable to send snapshot.";
+      }
+
+      function isPairingError(error) {
+        const message = formatRequestError(error).toLowerCase();
+        return Boolean((error && error.status === 401) || message.includes("figma bridge pairing code"));
+      }
+
+      function logBridge(message, details) {
+        if (details === undefined) {
+          console.log("[Rozetta Bridge]", message);
+          return;
+        }
+        console.log("[Rozetta Bridge]", message, details);
+      }
+
+      function summarizePairing(config) {
+        return {
+          serverUrl: config.serverUrl || "not set",
+          hasPairingCode: Boolean(config.pairingCode),
+          pairingCodeLength: config.pairingCode ? String(config.pairingCode).length : 0,
+        };
+      }
+
+      function summarizeSnapshot(nextSnapshot) {
+        return {
+          fileKey: nextSnapshot.fileKey,
+          name: nextSnapshot.name,
+          collections: Array.isArray(nextSnapshot.collections)
+            ? nextSnapshot.collections.length
+            : 0,
+          variables: Array.isArray(nextSnapshot.variables) ? nextSnapshot.variables.length : 0,
+          createdAt: nextSnapshot.createdAt,
+        };
+      }
+
+      function summarizeWriteback(payload) {
+        return {
+          version: payload && payload.version,
+          sets: payload && Array.isArray(payload.sets) ? payload.sets.length : 0,
+          themes: payload && Array.isArray(payload.themes) ? payload.themes.length : 0,
+          bindings: payload && Array.isArray(payload.bindings) ? payload.bindings.length : 0,
+        };
+      }
+
+      function row(title, meta, tone) {
+        const badgeClass = tone ? `badge ${tone}` : "badge";
+        return `<div class="row"><div><div class="row-title">${escapeHtml(title)}</div><div class="row-meta">${escapeHtml(meta)}</div></div><span class="${badgeClass}">${escapeHtml(tone || "ok")}</span></div>`;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`serializeContextForPrompt > snapshot — small fixture renders stable output 1`] = `
+"{
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "issues": [
+    {
+      "detail": "color.ink is not referenced",
+      "id": "issue-1",
+      "severity": "warning",
+      "source": {
+        "kind": "token",
+        "path": "color.ink",
+        "setId": "primitives"
+      },
+      "title": "Unused primitive"
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "issues": 1,
+    "rendered": 5,
+    "themes": 1,
+    "totalTokens": 5
+  },
+  "themes": [
+    {
+      "id": "light",
+      "name": "Light"
+    }
+  ],
+  "tokens": [
+    {
+      "aliasOf": "primitives:color.brand",
+      "consumedBy": [
+        "button"
+      ],
+      "id": "semantic:color.primary",
+      "resolved": "#0066FF",
+      "tier": "component",
+      "type": "color",
+      "value": "{color.brand}"
+    },
+    {
+      "id": "primitives:color.ink",
+      "referencedBy": [
+        "semantic:color.text"
+      ],
+      "tier": "primitive",
+      "type": "color",
+      "value": "#111111"
+    },
+    {
+      "aliasOf": "primitives:color.ink",
+      "consumedBy": [
+        "badge"
+      ],
+      "id": "semantic:color.text",
+      "resolved": "#111111",
+      "tier": "component",
+      "type": "color",
+      "value": "{color.ink}"
+    },
+    {
+      "id": "primitives:color.brand",
+      "referencedBy": [
+        "semantic:color.primary"
+      ],
+      "tier": "primitive",
+      "type": "color",
+      "value": "#0066FF"
+    },
+    {
+      "id": "spacing:space.sm",
+      "tier": "primitive",
+      "type": "dimension",
+      "value": "4px"
+    }
+  ]
+}"
+`;

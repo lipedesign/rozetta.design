@@ -1,0 +1,67 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+  id-token: write
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    # Skip fork PRs — GitHub does not expose secrets to workflows from forks.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          # Auth — pick ONE. Default: Console API key.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # For a Claude subscription instead, remove the line above and use:
+          # Or a Console API key: anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
+          use_sticky_comment: true
+          prompt: |
+            You are reviewing a pull request for **Rozetta** — an open-source
+            "Design System OS" (Next.js 16 / React 19 / Supabase / Drizzle /
+            DTCG tokens / MCP / Vercel AI SDK). This repo follows
+            Specification-Driven Development: the specs in /specs are the source
+            of truth.
+
+            Before reviewing, read `AGENTS.md` and the relevant files in
+            `specs/` (constitution.md, architecture.md, domain.md, contracts.md,
+            ui-patterns.md). Then review the diff and leave focused inline
+            comments. Prioritize, in order:
+
+            1. **SDD conformance** — does the change violate a `constitution.md`
+               principle or a `domain.md` invariant? If it touches an exported
+               signature in `contracts.md`, was the spec updated in the same PR?
+               If a feature's behavior changed, was its `specs/features/*.md`
+               Status/spec updated?
+            2. **Boundaries (AGENTS.md)** — client components must not import
+               server-only filesystem/db/bridge modules; workspace mutations must
+               call `requireWorkspaceRole`; token trees mutate ONLY via the
+               serializer (`setTokenAtPath`/`insertTokenAtPath`/`deleteTokenAtPath`),
+               never `set.root[...] = ...`; traversals use the type guards
+               (`isDtcgToken`/`isDtcgGroup`); AI calls go through Vercel AI SDK
+               adapters; bridge/github spawn is allowlisted (no `shell: true`).
+            3. **Security** — auth/workspace scoping gaps, secret leakage
+               (`.env*`, `*.local.json` must stay server/local-only), unvalidated
+               external input (Figma payloads, MCP/AI tool calls).
+            4. **Correctness & tests** — real bugs, missing edge cases, and
+               whether acceptance criteria are covered by Vitest tests.
+
+            Be concrete: cite `file:line`, explain the risk, and propose a fix.
+            Distinguish blocking issues from nits. Skip style the linter already
+            enforces. **Write the review in English.** If the PR is clean, say so
+            plainly.
+          claude_args: |
+            --max-turns 15
