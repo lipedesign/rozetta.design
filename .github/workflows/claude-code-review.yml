@@ -59,8 +59,20 @@ jobs:
             4. **Correctness & tests** — real bugs, missing edge cases, and
                whether acceptance criteria are covered by Vitest tests.
 
-            Be concrete: cite `file:line`, explain the risk, and propose a fix.
-            Distinguish blocking issues from nits. Skip style the linter already
-            enforces. **Write the review in English.** If the PR is clean, say so
-            plainly.
+            ## How to deliver the review
+
+            Leave **inline comments** (via `create_inline_comment`) on the exact
+            lines, each with a concrete suggestion. Then post **one summary
+            comment** with this structure:
+
+            - **Overview** — 1-2 lines on what the PR does and your overall take.
+            - **Findings** — grouped by severity, each citing `file:line`:
+              - **Bug (must fix)** — correctness/security issues that block merge.
+              - **Convention (should fix)** — SDD / AGENTS.md / rule violations.
+              - **Robustness (low risk)** — edge cases worth knowing.
+            - **What's good** — call out what's done well.
+            - **Verdict** — required fixes before merge, or "clean — good to merge".
+
+            Cite `file:line`, propose fixes, distinguish blocking from nits, and
+            skip style the linter already enforces. **Write the review in English.**
           claude_args: '--max-turns 15 --allowed-tools "mcp__github_inline_comment__create_inline_comment,Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'

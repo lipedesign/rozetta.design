@@ -1,0 +1,32 @@
+name: Feature request
+description: Propose a new feature or capability
+title: "feat: "
+labels: ["type: feat"]
+body:
+  - type: markdown
+    attributes:
+      value: Features are spec-first — see `AGENTS.md`. Describe the problem before the solution.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What user pain or gap does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: The smallest thing that delivers the value.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - tokens
+        - figma-bridge
+        - ai-os
+        - ui
+        - db
+        - mcp
+        - other
