@@ -2,7 +2,31 @@
 
 ## Summary
 
-<!-- What does this change and why? -->
+<!-- What this changes and why, in 2-4 lines. -->
+
+## Changes
+
+<!-- The notable changes, grouped if the PR is large. Keep it skimmable.
+- `area`: what changed
+-->
+
+## Design decisions
+
+<!-- Optional: non-obvious choices and trade-offs, so reviewers don't have to reverse-engineer them. Delete if N/A. -->
+
+## Test plan
+
+<!-- Paste real results, not intentions. -->
+- [ ] `pnpm exec tsc --noEmit` clean
+- [ ] `pnpm lint` clean
+- [ ] `pnpm test` → <!-- e.g. 182 passed -->
+- [ ] <!-- manual / scenario checks, if any -->
+
+## Out of scope
+
+<!-- What this deliberately does NOT do (and any follow-up issues). Delete if N/A. -->
+
+---
 
 ## Linked issue
 
@@ -20,9 +44,8 @@ Closes #
 ## Checklist
 
 - [ ] Targets `develop` (not `main`)
-- [ ] `pnpm lint` · `pnpm exec tsc --noEmit` · `pnpm test` all pass
 - [ ] Relevant `specs/features/*.md` `Status` updated (if behavior changed)
 - [ ] `specs/contracts.md` updated (if an exported signature changed)
 - [ ] No secrets / build artifacts committed
 
-<!-- The Claude Code Review will run automatically on this PR. -->
+<!-- The Claude Code Review runs automatically on this PR. -->
