@@ -116,6 +116,25 @@ export const tokenSets = pgTable(
   ]
 );
 
+export const designComponents = pgTable(
+  "design_components",
+  {
+    id: text("id").primaryKey(),
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    data: text("data").notNull(),
+    createdBy: text("created_by"),
+    updatedBy: text("updated_by"),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [
+    index("design_components_workspace_name_idx").on(table.workspaceId, table.name),
+  ]
+);
+
 export const tokenIndex = pgTable(
   "token_index",
   {
