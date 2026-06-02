@@ -10,6 +10,7 @@ import {
   ShapesIcon,
   Trash2Icon,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,11 +53,12 @@ export function ComponentsPage() {
   const activeComponent =
     components.find((component) => component.id === activeComponentId) ?? filtered[0] ?? null;
 
-  function handleCreate() {
+  async function handleCreate() {
     const name = newName.trim();
     if (!name) return;
-    createComponent(name, newCategory.trim() || "Core");
     setNewName("");
+    const result = await createComponent(name, newCategory.trim() || "Core");
+    if (!result.ok) toast.error(result.error);
   }
 
   return (
@@ -80,7 +82,7 @@ export function ComponentsPage() {
       <ScrollArea className="min-h-0 flex-1">
         <main className="grid xl:grid-cols-[24rem_1fr]">
           <section className="flex min-w-0 flex-col border-b xl:border-r xl:border-b-0">
-            <Block title="Create component" description="Stored in `.rozetta/components.json`." className="border-b">
+            <Block title="Create component" description="Saved to your workspace." className="border-b">
               <div className="flex flex-col gap-3">
                 <Input
                   value={newName}
@@ -161,8 +163,16 @@ export function ComponentsPage() {
               <ComponentEditor
                 key={activeComponent.id}
                 component={activeComponent}
-                onDuplicate={() => duplicateComponent(activeComponent.id)}
-                onDelete={() => deleteComponent(activeComponent.id)}
+                onDuplicate={() => {
+                  void duplicateComponent(activeComponent.id).then((result) => {
+                    if (!result.ok) toast.error(result.error);
+                  });
+                }}
+                onDelete={() => {
+                  void deleteComponent(activeComponent.id).then((result) => {
+                    if (!result.ok) toast.error(result.error);
+                  });
+                }}
               />
             ) : (
               <div className="px-6 py-12">
@@ -203,8 +213,8 @@ function ComponentEditor({
       .join("\n")
   );
 
-  function save() {
-    updateComponent(component.id, {
+  async function save() {
+    const result = await updateComponent(component.id, {
       ...draft,
       tokenRefs: lines(tokenRefs),
       variants: lines(variants).map((name) => ({ id: slug(name), name, values: [] })),
@@ -218,6 +228,7 @@ function ComponentEditor({
         }),
       },
     });
+    if (!result.ok) toast.error(result.error);
   }
 
   return (
