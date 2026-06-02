@@ -36,10 +36,12 @@ jobs:
             Specification-Driven Development: the specs in /specs are the source
             of truth.
 
-            Before reviewing, read `AGENTS.md` and the relevant files in
-            `specs/` (constitution.md, architecture.md, domain.md, contracts.md,
-            ui-patterns.md). Then review the diff and leave focused inline
-            comments. Prioritize, in order:
+            Before reviewing, read `AGENTS.md` and only the `specs/` files the
+            diff actually touches or depends on (from: constitution.md,
+            architecture.md, domain.md, contracts.md, ui-patterns.md) — skip the
+            ones a small diff doesn't relate to, to stay within the turn budget.
+            Then review the diff and leave focused inline comments. Prioritize, in
+            order:
 
             1. **SDD conformance** — does the change violate a `constitution.md`
                principle or a `domain.md` invariant? If it touches an exported
@@ -75,4 +77,4 @@ jobs:
 
             Cite `file:line`, propose fixes, distinguish blocking from nits, and
             skip style the linter already enforces. **Write the review in English.**
-          claude_args: '--max-turns 15 --allowed-tools "mcp__github_inline_comment__create_inline_comment,Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+          claude_args: '--max-turns 40 --allowed-tools "mcp__github_inline_comment__create_inline_comment,Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
