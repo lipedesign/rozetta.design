@@ -16,6 +16,9 @@ import type {
   DesignSystemComponent,
 } from "@/lib/workspace/types";
 
+/** Result of an awaited component mutation — `{ ok: false }` means the store rolled back. */
+export type ComponentPersistResult = { ok: true } | { ok: false; error: string };
+
 interface DesignSystemState {
   brands: Brand[];
   components: DesignSystemComponent[];
@@ -27,10 +30,10 @@ interface DesignSystemState {
   duplicateBrand: (id: string) => Brand | undefined;
   deleteBrand: (id: string) => void;
   selectBrand: (id: string | null) => void;
-  createComponent: (name: string, category?: string) => DesignSystemComponent;
-  updateComponent: (id: string, patch: Partial<DesignSystemComponent>) => void;
-  duplicateComponent: (id: string) => DesignSystemComponent | undefined;
-  deleteComponent: (id: string) => void;
+  createComponent: (name: string, category?: string) => Promise<ComponentPersistResult>;
+  updateComponent: (id: string, patch: Partial<DesignSystemComponent>) => Promise<ComponentPersistResult>;
+  duplicateComponent: (id: string) => Promise<ComponentPersistResult>;
+  deleteComponent: (id: string) => Promise<ComponentPersistResult>;
   selectComponent: (id: string | null) => void;
 }
 
@@ -109,29 +112,36 @@ export const useDesignSystemStore = create<DesignSystemState>((set, get) => ({
     set({ activeBrandId: id });
   },
 
-  createComponent(name, category) {
-    const components = get().components;
-    const component = createComponentDraft({ name, components, category });
-    const next = [component, ...components];
-    persistComponents(next);
+  async createComponent(name, category) {
+    const prevComponents = get().components;
+    const prevActive = get().activeComponentId;
+    const component = createComponentDraft({ name, components: prevComponents, category });
+    const next = [component, ...prevComponents];
     set({ components: next, activeComponentId: component.id });
-    return component;
+    const result = await persistComponents(next);
+    if (!result.ok) set({ components: prevComponents, activeComponentId: prevActive });
+    return result;
   },
 
-  updateComponent(id, patch) {
-    const next = get().components.map((component) =>
+  async updateComponent(id, patch) {
+    const prevComponents = get().components;
+    const next = prevComponents.map((component) =>
       component.id === id ? normalizeComponentPatch(component, patch) : component
     );
-    persistComponents(next);
     set({ components: next });
+    const result = await persistComponents(next);
+    if (!result.ok) set({ components: prevComponents });
+    return result;
   },
 
-  duplicateComponent(id) {
-    const source = get().components.find((component) => component.id === id);
-    if (!source) return undefined;
+  async duplicateComponent(id) {
+    const prevComponents = get().components;
+    const prevActive = get().activeComponentId;
+    const source = prevComponents.find((component) => component.id === id);
+    if (!source) return { ok: true };
     const draft = createComponentDraft({
       name: `${source.name} Copy`,
-      components: get().components,
+      components: prevComponents,
       category: source.category,
     });
     const copy: DesignSystemComponent = {
@@ -142,25 +152,33 @@ export const useDesignSystemStore = create<DesignSystemState>((set, get) => ({
       status: "draft",
       updatedAt: new Date().toISOString(),
     };
-    const next = [copy, ...get().components];
-    persistComponents(next);
+    const next = [copy, ...prevComponents];
     set({ components: next, activeComponentId: copy.id });
-    return copy;
+    const result = await persistComponents(next);
+    if (!result.ok) set({ components: prevComponents, activeComponentId: prevActive });
+    return result;
   },
 
-  deleteComponent(id) {
-    const nextComponents = get().components.filter((component) => component.id !== id);
-    const nextBrands = get().brands.map((brand) => ({
+  async deleteComponent(id) {
+    const prevComponents = get().components;
+    const prevBrands = get().brands;
+    const prevActive = get().activeComponentId;
+    const nextComponents = prevComponents.filter((component) => component.id !== id);
+    const nextBrands = prevBrands.map((brand) => ({
       ...brand,
       componentIds: brand.componentIds.filter((componentId) => componentId !== id),
     }));
-    persistComponents(nextComponents);
-    persistBrands(nextBrands);
     set({
       brands: nextBrands,
       components: nextComponents,
-      activeComponentId: get().activeComponentId === id ? nextComponents[0]?.id ?? null : get().activeComponentId,
+      activeComponentId: prevActive === id ? nextComponents[0]?.id ?? null : prevActive,
     });
+    persistBrands(nextBrands);
+    const result = await persistComponents(nextComponents);
+    if (!result.ok) {
+      set({ brands: prevBrands, components: prevComponents, activeComponentId: prevActive });
+    }
+    return result;
   },
 
   selectComponent(id) {
@@ -172,8 +190,11 @@ function persistBrands(brands: Brand[]): void {
   void saveBrands(brands);
 }
 
-function persistComponents(components: DesignSystemComponent[]): void {
-  void saveComponents(components);
+async function persistComponents(
+  components: DesignSystemComponent[]
+): Promise<ComponentPersistResult> {
+  const result = await saveComponents(components);
+  return result.ok ? { ok: true } : { ok: false, error: result.error };
 }
 
 function normalizeBrandPatch(brand: Brand, patch: Partial<Brand>): Brand {
