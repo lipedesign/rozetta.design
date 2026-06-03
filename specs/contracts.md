@@ -679,6 +679,40 @@ const rozettaTools: {
 
 ---
 
+## 4b. Semantic intent (`dtcg/semantic.ts`)
+
+Opt-in semantic layer stored under `$extensions["com.rozetta.semantic"]` (key `ROZETTA_SEMANTIC_EXT_KEY`). Pure, framework-free; preserved through serializer ops by invariant I11. See [`domain.md` §2.5](./domain.md#25-semantic-intent-first-class).
+
+```ts
+type SemanticTier = "primitive" | "semantic" | "component";
+
+interface SemanticDescription { intent?: string; usage?: string; donts?: string[]; }
+
+type TokenRelationKind = "backs" | "variant-of" | "pairs-with" | "replaces";
+interface TokenRelation { kind: TokenRelationKind; target: string; } // target = dot path
+
+interface SemanticTokenMetadata {
+  tier: SemanticTier;
+  role?: string;
+  description?: SemanticDescription;   // complements the plain $description
+  relations?: TokenRelation[];          // typed links beyond value aliases
+  deprecated?: boolean;
+  replacedBy?: string;
+}
+
+function getSemanticMeta(token: DtcgToken): SemanticTokenMetadata | null;
+function setSemanticMeta(token: DtcgToken, meta: SemanticTokenMetadata): DtcgToken;
+function inferSemanticTier(token: DtcgToken, ctx?: SemanticInferenceContext): SemanticTier;
+function resolveTier(token: DtcgToken, ctx?: SemanticInferenceContext): SemanticTier; // explicit wins
+function deriveRelations(set: TokenSet): Record<string, TokenRelation[]>; // inferred `backs`, read-only
+```
+
+- `getSemanticMeta`/`setSemanticMeta` validate and round-trip the metadata; malformed `description`/`relations` fields are dropped, never thrown (domain I12).
+- `deriveRelations` infers `backs` edges from the alias graph (the aliased primitive backs the aliasing semantic); explicit `relations` win over inferred. It never mutates a token.
+- Zod shapes: `rozettaSemanticMetadataSchema`, `rozettaSemanticDescriptionSchema`, `tokenRelationSchema` in *src/lib/dtcg/schema.ts* — exposed for downstream validators, not enforced inside the open `$extensions` record.
+
+---
+
 ## 5. Tokens store (`useTokensStore`)
 
 File: *src/lib/stores/tokens-store.ts*.
