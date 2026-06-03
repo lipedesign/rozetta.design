@@ -17,9 +17,22 @@ const dtcgTypeSchema = z.enum(DTCG_TYPES);
  * not enforced inside the DTCG `$extensions` record (which stays open by
  * design).
  */
+export const rozettaSemanticDescriptionSchema = z.object({
+  intent: z.string().optional(),
+  usage: z.string().optional(),
+  donts: z.array(z.string()).optional(),
+});
+
+export const tokenRelationSchema = z.object({
+  kind: z.enum(["backs", "variant-of", "pairs-with", "replaces"]),
+  target: z.string(),
+});
+
 export const rozettaSemanticMetadataSchema = z.object({
   tier: z.enum(["primitive", "semantic", "component"]),
   role: z.string().optional(),
+  description: rozettaSemanticDescriptionSchema.optional(),
+  relations: z.array(tokenRelationSchema).optional(),
   deprecated: z.boolean().optional(),
   replacedBy: z.string().optional(),
 });
